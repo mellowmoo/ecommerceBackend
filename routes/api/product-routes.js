@@ -7,14 +7,10 @@ const { Product, Category, Tag, ProductTag } = require('../../models');
 router.get('/', async (req, res) => {
   // find all products
   try {
-    const categoriesData = await Category.destroy({
-      where: { id: req.params.id }
+    const productsData = await Product.findAll({
+      include: [{ model: Category }, { model: Tag }]
     });
-    if (!categoriesData) {
-      res.status(404).json({ message: 'No category with this id!'});
-      return;
-    }
-    res.status(200).json(categoriesData);
+    res.status(200).json(productsData);
   } catch (err) {
     res.status(500).json(err);
   }
@@ -43,10 +39,10 @@ router.get('/:id', async (req, res) => {
 router.post('/', (req, res) => {
   /* req.body should look like this...
     {
-      product_name: "Basketball",
-      price: 200.00,
-      stock: 3,
-      tagIds: [1, 2, 3, 4]
+      "product_name": "Basketball",
+      "price": 200.00,
+      "stock": 3,
+      "tagIds": [1, 2, 3, 4]
     }
   */
   Product.create(req.body)
